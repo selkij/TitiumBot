@@ -1,10 +1,16 @@
 import math
 import time
+import os
+from dotenv import load_dotenv
 
 import discord, io, base64, requests
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix="*")
+
+load_dotenv()
+
+token = os.getenv("TOKEN")
 
 
 @bot.event
@@ -73,4 +79,4 @@ async def minecraft(ctx, ip, port="25565"):
 
         await time.sleep(30000)
 
-bot.run('OTU1MzU0NTI2NzU4NjAwNzI0.YjgdPA.RjDXIINnqrkqbxblLYsRtUQDbjM')
+bot.run(token)

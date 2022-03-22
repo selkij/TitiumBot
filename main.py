@@ -58,6 +58,7 @@ async def minecraft(ctx, ip, port="25565"):
 
         serverEmbed = discord.Embed(title=f"{serverName}", color=color)
         serverEmbed.set_thumbnail(url="attachment://favicon.png")
+        serverEmbed.add_field(name="Addresse IP:", value=f"{ip}:{port}")
         serverEmbed.add_field(name="Status:", value=online, inline=False)
         serverEmbed.add_field(name="Version:", value=version, inline=False)
         serverEmbed.add_field(name="Players:", value=f"{playerCount} / **{playerMax}** MAX", inline=False)

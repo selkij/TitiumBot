@@ -22,6 +22,7 @@ async def on_ready():
 
 
 @bot.command()
+@commands.has_permissions(administrator = True)
 async def minecraft(ctx, ip, port="25565"):
     while True:
         r = requests.get('https://mcapi.us/server/status?ip=' + ip + '&port=' + port)

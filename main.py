@@ -49,7 +49,7 @@ async def minecraft(ctx, ip, port="25565"):
             online = "❌ **Fermé**"
             color = 0xdf1515
 
-        if online == "True":
+        if online:
             iconRaw = json_data["favicon"]
             icon = iconRaw.split(',', 1)
             favicon = discord.File(io.BytesIO(base64.b64decode(icon[1])), filename="favicon.png")

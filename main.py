@@ -1,4 +1,5 @@
 import asyncio
+import json
 import math
 import time
 import os
@@ -22,20 +23,22 @@ async def on_ready():
 
 
 @bot.command()
-@commands.has_permissions(administrator = True)
-async def minecraft(ctx, ip, port="25565"):
-    while True:
-        r = requests.get('https://mcapi.us/server/status?ip=' + ip + '&port=' + port)
-        json_data = r.json()
+@commands.has_permissions(administrator=True)
+async def status(ctx, ip, port="25565"):
+    await ctx.message.delete()
 
-        desc = json_data["motd"]
-        online = json_data["online"]
-        status = json_data["status"]
+    while True:
+        server_r = requests.get('https://mcapi.us/server/status?ip=' + ip + '&port=' + port)
+        server_data = server_r.json()
+
+        desc = server_data["motd"]
+        online = server_data["online"]
+        status = server_data["status"]
         serverName = "Titium S2"
-        playerCount = json_data["players"]["now"]
-        playerMax = json_data["players"]["max"]
-        version = json_data["server"]["name"]
-        duration = json_data["duration"]
+        playerCount = server_data["players"]["now"]
+        playerMax = server_data["players"]["max"]
+        version = server_data["server"]["name"]
+        duration = server_data["duration"]
 
         if online:
 
@@ -50,7 +53,7 @@ async def minecraft(ctx, ip, port="25565"):
             color = 0xdf1515
 
         if online:
-            iconRaw = json_data["favicon"]
+            iconRaw = server_data["favicon"]
             icon = iconRaw.split(',', 1)
             favicon = discord.File(io.BytesIO(base64.b64decode(icon[1])), filename="favicon.png")
         else:
@@ -63,14 +66,24 @@ async def minecraft(ctx, ip, port="25565"):
         serverEmbed.add_field(name="Version:", value=version, inline=False)
         serverEmbed.add_field(name="Players:", value=f"{playerCount} / **{playerMax}** MAX", inline=False)
 
-        if json_data["error"] is not None:
-            serverEmbed.add_field(name="Error:", value=json_data["error"], inline=False)
+        if server_data["error"] is not None:
+            serverEmbed.add_field(name="Error:", value=server_data["error"], inline=False)
 
-        serverEmbed.set_footer(text=f"Titium S2 | Cela a pris {math.trunc(float(duration) / 1000000)}ms")
+        serverEmbed.set_footer(text=f"Titium S2 | Cela a pris {math.trunc(float(duration) / 1000000)}ms à McAPI")
 
-        print(json_data)
-        await ctx.send(embed=serverEmbed, file=favicon, delete_after=60)
-        await asyncio.sleep(60)
+        print(server_data)
+        await ctx.send(embed=serverEmbed, file=favicon, delete_after=90)
+        await asyncio.sleep(90)
+
+
+@status.error
+async def statusError(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.message.delete()
+        await ctx.send("> ⛔ Tu n'as pas la permission `administrator` pour effectuer cette commande!", delete_after=5)
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.message.delete()
+        await ctx.send("> ⛔ Veuillez entrer une addresse IP et son port \nExemple: `*status hypixel.net <port=25565>", delete_after=5)
 
 
 bot.run(token)

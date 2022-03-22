@@ -1,3 +1,4 @@
+import asyncio
 import math
 import time
 import os
@@ -22,8 +23,6 @@ async def on_ready():
 
 @bot.command()
 async def minecraft(ctx, ip, port="25565"):
-    temp = 0
-
     while True:
         r = requests.get('https://mcapi.us/server/status?ip=' + ip + '&port=' + port)
         json_data = r.json()
@@ -36,6 +35,18 @@ async def minecraft(ctx, ip, port="25565"):
         playerMax = json_data["players"]["max"]
         version = json_data["server"]["name"]
         duration = json_data["duration"]
+
+        if online:
+
+            if status != "success":
+                online = "⚠️ **Problèmes de connexion détectés**"
+                color = 0xffdc00
+            else:
+                online = "✅ **Ouvert**"
+                color = 0x49ff00
+        else:
+            online = "❌ **Fermé**"
+            color = 0xdf1515
 
         if online:
             iconRaw = json_data["favicon"]
@@ -55,28 +66,9 @@ async def minecraft(ctx, ip, port="25565"):
 
         serverEmbed.set_footer(text=f"Titium S2 | Cela a pris {math.trunc(float(duration) / 1000000)}ms")
 
-        msg = await ctx.send(embed=serverEmbed, file=favicon)
-
-        if online:
-
-            if status != "success":
-                online = "⚠️ **Problèmes de connexion détectés**"
-                color = 0xffdc00
-            else:
-                online = "✅ **Ouvert**"
-                color = 0x49ff00
-        else:
-            online = "❌ **Fermé**"
-            color = 0xdf1515
-
         print(json_data)
+        await ctx.send(embed=serverEmbed, file=favicon, delete_after=60)
+        await asyncio.sleep(60)
 
-        if temp == 0:
-
-            temp=1
-        if temp == 1:
-            await msg.edit(embed=serverEmbed)
-
-        await time.sleep(30000)
 
 bot.run(token)

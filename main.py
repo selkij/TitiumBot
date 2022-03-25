@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 import discord, io, base64, requests
 from discord.ext import commands
 
+print("Démarrage du bot 🤖")
+
 bot = commands.Bot(command_prefix="*")
 
 load_dotenv()
@@ -18,8 +20,8 @@ token = os.getenv("TOKEN")
 @bot.event
 async def on_ready():
     game = discord.Game("Titium S2!")
-    await bot.change_presence(status=discord.Status.idle, activity=game)
-    print("Bot ready")
+    await bot.change_presence(status=discord.Status.online, activity=game)
+    print("Bot prêt! 🙂")
 
 
 @bot.command()
